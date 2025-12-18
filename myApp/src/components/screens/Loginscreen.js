@@ -10,6 +10,7 @@ import {
 
 //import Appservice from "../../../sevices/Appservice";
 import Homescreen from "./Homescreen";
+//import Register from "./Register";
 
 export default function Loginscreen({ navigation }) {
   const [email, setEmail] = useState("");
@@ -29,6 +30,15 @@ export default function Loginscreen({ navigation }) {
       alert("Invalid credentials");
     }
   };
+
+
+  const handleregister=()=>{
+    navigation.navigate("Register");
+  }
+
+
+
+
  return (
     <ImageBackground
       source={{
@@ -74,6 +84,9 @@ export default function Loginscreen({ navigation }) {
 
           <Pressable style={styles.button} onPress={handlelogin}>
             <Text style={styles.buttonText}>LOGIN</Text>
+          </Pressable>
+          <Pressable style={styles.button} onPress={handleregister}>
+            <Text style={styles.buttonText}>REGISTER</Text>
           </Pressable>
         </View>
       </View>

@@ -1,9 +1,14 @@
+import Api from "./Api";
 
-import axios from "axios";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+const api = Api;
 
-const Appservice={getData:async()=>{
-    
-        await axios.get("https://jsonplaceholder.typicode.com/posts")}.data
+export const addExpense = (expense) => {
+  return api.post("/expenses", expense);
+};
 
-export  {Appservice}
+export const getExpenses = () => {
+  return api.get("/expenses");
+}
+export const registerUser = (userData) => {
+  return api.post("/register", userData);
+}
