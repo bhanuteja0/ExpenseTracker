@@ -7,8 +7,11 @@ import AppNavigation from "./src/components/navigation/AppNavigation";
 
 export default function App() {
   return (
+    
     <NavigationContainer>
-      <AppNavigation/>
+    <AppNavigation/>
     </NavigationContainer>
+    
+  
   );
 }

@@ -7,6 +7,7 @@ import Create from "../screens/Create"
 import {createNativeStackNavigator} from "@react-navigation/native-stack"
 import Register from "../screens/Register"
 import Account from "../screens/Account"
+import Category from "../screens/Category"
 const Tab=createBottomTabNavigator();
 
 const Stack=createNativeStackNavigator();
@@ -16,7 +17,7 @@ function Mytabs(){
         <Tab.Navigator screenOptions={{headerShown:false}}>
             <Tab.Screen name="Home" component={Homescreen}/>
             <Tab.Screen name="insights" component={Insights}/>
-            <Tab.Screen name="create" component={Create}/>
+            <Tab.Screen name="Create" component={Create}/>
             <Tab.Screen name="Account" component={Account}/>
 
 
@@ -38,6 +39,8 @@ export default function AppNavigation(){
         
         <Stack.Screen name="Loginscreen" component={Loginscreen}/>
          <Stack.Screen name="Register" component={Register}/>
+         <Stack.Screen name="Category" component={Category} options={{presentation:"modal"}}  />
+         {/* <Stack.Screen name="Create" component={Create}/> */}
         <Stack.Screen name="bottomtabs" component={Mytabs}/>
 
 

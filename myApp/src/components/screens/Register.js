@@ -7,6 +7,7 @@ import tailwind from "twrnc";
 
 
 
+
 import { View, Text ,Button,Pressable,StyleSheet} from "react-native";
 
 
@@ -15,16 +16,30 @@ const Register=({navigation})=> {
     const [user_name, setUsername] = useState("");
     const [phone, setPhonenumber] = useState("");
     const [email, setEmail] = useState("");
-    const [user_pwd, setPassword] = useState("");
+    const [password, setPassword] = useState("");
 
 
-    const handleRegister=async()=>{
-        await registerUser({
-            user_name,phone,email,user_pwd });
-             Alert.alert("User Registered Successfully");
-        navigation.navigate("Loginscreen");
+    const handleRegister = async () => {
+    if (!user_name || !phone || !email || !password) {
+      Alert.alert("All fields are required");
+      return;
+    }
 
-        }
+    try {
+      const res = await registerUser({
+        user_name,
+        phone,
+        email,
+        password,
+      });
+
+      Alert.alert("User Registered Successfully");
+      navigation.navigate("Loginscreen");
+    } catch (error) {
+      console.log("REGISTER ERROR:", error.response?.data || error.message);
+      Alert.alert(error.response?.data?.message || "Registration failed");
+    }
+  };
        
 
 
@@ -39,8 +54,8 @@ const Register=({navigation})=> {
 
 
     return (
-        <View style={tailwind`p-4 bg-white h-full`}>
-            
+        <View style={tailwind`p-4 bg-black h-full justify-center`}>
+          <Text style={tailwind`text-white text-2xl font-bold mb-6 text-center`}>Register</Text>
               <TextInput
                          
                          placeholder="user name"
@@ -48,6 +63,7 @@ const Register=({navigation})=> {
                          value={user_name}
                          onChangeText={setUsername}
                          autoCapitalize="none"
+                         style={tailwind`bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-gray-200 mb-4`}
                        />
 
 
@@ -58,6 +74,7 @@ const Register=({navigation})=> {
                          value={phone}
                          onChangeText={setPhonenumber}
                          autoCapitalize="none"
+                         style={tailwind`bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-gray-200 mb-4`}
                        />
 
                         <TextInput
@@ -67,6 +84,7 @@ const Register=({navigation})=> {
                          value={email}
                          onChangeText={setEmail}
                          autoCapitalize="none"
+                         style={tailwind`bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-gray-200 mb-4`}
                        />
 
 
@@ -75,10 +93,11 @@ const Register=({navigation})=> {
                         
                          placeholder="password"
                          placeholderTextColor="#666"
-                         value={user_pwd}
+                         value={password}
                          onChangeText={setPassword}
                          autoCapitalize="none"
                          secureTextEntry
+                         style={tailwind`bg-gray-900 border border-gray-800 rounded-xl px-4 py-3 text-gray-200 mb-4`}
                        />
 
                        <Pressable>

@@ -28,19 +28,27 @@ const Homescreen=({navigation})=> {
 
   return (
     <View>
-      <View style={tailwind`p-4 bg-blue-500`}>
-        <Text style={tailwind`text-white text-lg font-bold`}>Home Screen</Text>
-      </View>
-      <Text>Expenses</Text>
-      <View>
-        <View style={tailwind`p-4 bg-black flex-row justify-between items-center`}>
-          <Text style={tailwind`text-white text-lg`}>Total Expense</Text>
-          <Text style={tailwind`text-white text-lg font-bold`}>₹ {TotalExpense.toFixed(2)}</Text>
-          
+      <View style={tailwind`px-4 mt-6 mb-4`}>
+  <Text style={tailwind`text-black text-sm uppercase`}>
+    Overview
+  </Text>
+  <Text style={tailwind`text-black text-3xl font-bold mt-1`}>
+    Expense Dashboard
+  </Text>
+</View>
+      <View style={[tailwind`mx-4 mt-4 p-5 rounded-2xl bg-black`, { alignItems: "center", justifyContent: "center",borderWidth: 1,borderColor: "#222",
+    },
+  ]}
+>
+  <Text style={tailwind`text-gray-400 text-sm`}>
+    Total Expense
+  </Text>
 
+  <Text style={tailwind`text-white text-2xl font-bold mt-2`}>
+    ₹ {TotalExpense.toFixed(2)}
+  </Text>
+</View>
 
-
-      </View>
 
         <FlatList 
           data={expensedata}
@@ -62,7 +70,7 @@ const Homescreen=({navigation})=> {
         
       
     </View>
-    </View>
+    
   );
 }
 
