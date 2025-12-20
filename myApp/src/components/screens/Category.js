@@ -3,7 +3,7 @@ import React from 'react'
 import tailwind from 'twrnc'
 import { FlatList } from 'react-native';
 
-import {Utensils,Cable, ShoppingBag,FileText,Film, Heart,MoreHorizontal,} from "lucide-react-native";
+import {Utensils,Cable, ShoppingBag,FileText,Film, Heart,MoreHorizontal, Merge,} from "lucide-react-native";
 
 const categories = [
   { name: "Food", icon: Utensils },
@@ -25,9 +25,9 @@ const Category = ({ navigation }) => {
   const handleselectedcategory = (category) => {
     console.log("selected category:", category);
 
-    navigation.navigate("bottomtabs", {
+    navigation.popTo("bottomtabs", {
       screen: "Create",
-      params: { category: category.name }
+      params: { category: category.name },merge: true
     });
   };
 

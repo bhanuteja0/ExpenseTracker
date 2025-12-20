@@ -52,6 +52,7 @@ const Homescreen=({navigation})=> {
 
         <FlatList 
           data={expensedata}
+          // data={[]}
          // sample data array real data come from expenses table
           keyExtractor={(item) => item.id.toString()}
  // unique key for each item

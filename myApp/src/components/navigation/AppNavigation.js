@@ -36,12 +36,13 @@ export default function AppNavigation(){
 
     <Stack.Navigator screenOptions={{headerShown:false}}>
 
-        
+{/*         
         <Stack.Screen name="Loginscreen" component={Loginscreen}/>
-         <Stack.Screen name="Register" component={Register}/>
-         <Stack.Screen name="Category" component={Category} options={{presentation:"modal"}}  />
+         <Stack.Screen name="Register" component={Register}/> */}
+          <Stack.Screen name="bottomtabs" component={Mytabs}/>
+         <Stack.Screen name="Category" component={Category} options={{presentation:"modal"}} />
          {/* <Stack.Screen name="Create" component={Create}/> */}
-        <Stack.Screen name="bottomtabs" component={Mytabs}/>
+       
 
 
 

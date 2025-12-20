@@ -29,11 +29,13 @@ export default function Create({navigation,route}) {
       return;
     }
 
+    navigation.navigate("bottomtabs")
+
 
   }
 
   const handlecategory=()=>{
-    navigation.navigate("Category");
+    navigation.navigate("Category",{amount,title});
 
   }
 
