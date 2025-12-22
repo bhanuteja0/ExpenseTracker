@@ -22,3 +22,7 @@ export const loginUser = (credentials) => {
 
 
 // }
+
+// export const getgroups=()=>{
+//   return api.get("/groups");
+// }

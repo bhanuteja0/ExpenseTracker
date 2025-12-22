@@ -14,7 +14,7 @@ export const expensedata=[{
   id:3, title:"Utilities", amount:100, date:"2023-10-03"},
 {
   id:4, title:"Dining", amount:75, date:"2023-10-04"
-}
+},{id:5, title:"Entertainment", amount:40, date:"2023-10-05"}
 
 
 

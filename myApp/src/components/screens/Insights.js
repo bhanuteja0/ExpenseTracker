@@ -132,6 +132,39 @@ const COLORS = [
           )}
         />
       </View>
+      <View>
+        <View>
+        <Text style={tailwind`text-lg font-semibold mt-6 mb-2`}>
+
+          LEGEND
+        </Text>
+        </View>
+          <View >
+          {expenses.map((item,index)=>(
+            
+              <Text key={index} style={tailwind`mb-6 font-medium `} >
+                
+               {item.id} {item.category}: {item.amount}
+
+
+              </Text>
+              
+
+
+            
+
+
+
+          ))}
+          </View>
+
+
+
+
+        
+
+
+      </View>
 
     </View>
 
