@@ -16,11 +16,11 @@ const Register=({navigation})=> {
     const [user_name, setUsername] = useState("");
     const [phone, setPhonenumber] = useState("");
     const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [user_pwd, setPassword] = useState("");
 
 
     const handleRegister = async () => {
-    if (!user_name || !phone || !email || !password) {
+    if (!user_name || !phone || !email || !user_pwd) {
       Alert.alert("All fields are required");
       return;
     }
@@ -30,7 +30,7 @@ const Register=({navigation})=> {
         user_name,
         phone,
         email,
-        password,
+        user_pwd,
       });
 
       Alert.alert("User Registered Successfully");
@@ -93,7 +93,7 @@ const Register=({navigation})=> {
                         
                          placeholder="password"
                          placeholderTextColor="#666"
-                         value={password}
+                         value={user_pwd}
                          onChangeText={setPassword}
                          autoCapitalize="none"
                          secureTextEntry

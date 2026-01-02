@@ -2,6 +2,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import tailwind from 'twrnc'
 import { FlatList } from 'react-native';
+import { setCategory } from '../../../sevices/Appservice';
+import { useState } from 'react';
 
 import {Utensils,Cable, ShoppingBag,FileText,Film, Heart,MoreHorizontal, Merge,} from "lucide-react-native";
 
@@ -22,7 +24,20 @@ const categories = [
 
 
 const Category = ({ navigation }) => {
-  const handleselectedcategory = (category) => {
+
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [categorytype, setCategorytype] = useState("personal");
+  const handleselectedcategory = async(category) => {
+
+    const selectedCategory = {category_name: category.name, category_type: categorytype};
+    try {
+      await setCategory(selectedCategory);
+    } catch (error) {
+      console.log("SET CATEGORY ERROR:", error.response?.data || error.message);
+    }
+
+
+
     console.log("selected category:", category);
 
     navigation.popTo("bottomtabs", {
@@ -36,6 +51,13 @@ const renderItem = ({ item }) => {
   const Icon = item.icon;
 
   return (
+    <View>
+
+
+
+
+
+    
     <Pressable
       onPress={() => handleselectedcategory(item)}
       style={({ pressed }) => [
@@ -60,6 +82,7 @@ const renderItem = ({ item }) => {
         {item.name}
       </Text>
     </Pressable>
+    </View>
   );
 };
 
@@ -69,7 +92,33 @@ const renderItem = ({ item }) => {
 
 
  return (
+  
+
+
+
+
   <View style={{ flex: 1 }}>
+    <View style={tailwind`flex-row justify-between items-center mb-4`}>
+
+  <Text style={tailwind`text-2xl font-bold text-black`}>
+    Add New Expense
+  </Text>
+
+  {/* Dropdown Button */}
+  <Pressable
+    onPress={() => setShowDropdown(!showDropdown)}
+    style={tailwind`bg-gray-200 px-3 py-2 rounded-xl`}
+  >
+    <Text style={tailwind`text-black`}>
+      {setCategorytype === "personal" ? "Personal" : "Shared"}
+    </Text>
+  </Pressable>
+
+</View>
+
+
+
+
     <Pressable onPress={() => navigation.goBack()}>
       <Text style={tailwind``}>X</Text>
     </Pressable>

@@ -4,6 +4,8 @@ import { useState } from "react";
 import { useEffect } from "react";
 import tailwind from "twrnc";
 import { Alert } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { addExpense } from "../../../sevices/Appservice";
 
 
 
@@ -13,6 +15,16 @@ export default function Create({navigation,route}) {
   const [amount,setAmount]=useState(null);
   const [title,setTitle]=useState("");
   const [Category,setCategory]=useState("");
+  const [user_id,setUserId]=useState(1);//hardcoded for now
+  const [categoryId, setCategoryId] = useState(1);//hardcoded for now
+  const [expenseType, setExpenseType] = useState("personal");
+  const [expenseDate, setExpenseDate] = useState(new Date().toISOString().slice(0,10));
+  
+
+//   useEffect(() => {
+//   AsyncStorage.getItem("user_id").then(id => setUserId(id));
+// }, []);
+
 
   useEffect(()=>{
     if(route.params?.category){
@@ -23,13 +35,47 @@ export default function Create({navigation,route}) {
 
   },[route.params?.category]);
 
-  const handleexpense=()=>{
+
+
+  const payload = {
+    paid_by: user_id,
+    amount: Number(amount),
+    category_id: categoryId,
+    descriptions: title,
+    expense_type: "personal",
+    group_id: null,
+    expense_date: expenseDate,
+    split_users: []   // empty for personal
+  };
+
+
+
+
+
+
+
+  const handleexpense=async()=>{
     if(!amount || !title){
       Alert.alert("Please fill all the fields");
       return;
     }
+     try {
+    const res = await addExpense(payload);
 
-    navigation.navigate("bottomtabs")
+    Alert.alert(res.data?.message || "Expense Added");
+    navigation.navigate("bottomtabs");
+
+  } catch (err) {
+    console.log("ADD EXPENSE ERROR:", err.response?.data || err.message);
+    Alert.alert(err.response?.data?.message || "Failed to add expense");
+  }
+
+
+
+
+
+
+
 
 
   }
@@ -83,6 +129,21 @@ export default function Create({navigation,route}) {
         onChangeText={setTitle}
         style={tailwind`border border-gray-300 rounded-xl px-4 py-3 text-black`}
       />
+    </View>
+    <View> 
+       <Text style={tailwind`text-sm text-gray-500 mb-2`}>
+        Expense Date
+      </Text>
+      <TextInput
+        placeholder="YYYY-MM-DD"
+        placeholderTextColor="#9CA3AF"
+        value={expenseDate}
+        onChangeText={setExpenseDate}
+        style={tailwind`border border-gray-300 rounded-xl px-4 py-3 text-black`}
+      />
+
+
+
     </View>
 
     {/* Category */}

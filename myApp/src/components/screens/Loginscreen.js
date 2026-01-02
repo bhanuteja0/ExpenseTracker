@@ -17,18 +17,19 @@ import tailwind from "twrnc";
 
 export default function Loginscreen({ navigation }) {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [user_pwd, setPassword] = useState("");
   const [message, setMessage] = useState("");
 
 const handlelogin = async () => {
   try {
     const res = await loginUser({
       email,
-      password,
+      user_pwd,
     });
 
-    await AsyncStorage.setItem("token", res.data.token);
-    await AsyncStorage.setItem("user", JSON.stringify(res.data.user));
+     await AsyncStorage.setItem("token", res.data.token);
+    await AsyncStorage.setItem("user_id", res.data.user_id.toString());
+    await AsyncStorage.setItem("user_name", JSON.stringify(res.data.user_name));
 
 
     navigation.replace("bottomtabs");
@@ -81,7 +82,7 @@ const handlelogin = async () => {
         <TextInput
           placeholder="Enter password"
           placeholderTextColor="#9CA3AF"
-          value={password}
+          value={user_pwd}
           onChangeText={setPassword}
           secureTextEntry
           style={tailwind`border border-gray-300 rounded-xl px-4 py-3 text-black`}
