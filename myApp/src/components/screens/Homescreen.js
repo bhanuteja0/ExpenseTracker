@@ -5,6 +5,7 @@ import { FlatList } from "react-native";
 import tailwind from "twrnc";
 import Emptylist from "../Emptylist";
 import Expenseitemcard from "../Expenseitemcard";
+import { getExpenses } from "../../../sevices/Appservice";
 
 
 export const expensedata=[{
@@ -23,6 +24,19 @@ export const expensedata=[{
 
 
 const Homescreen=({navigation})=> {
+  [userid,setuser_id]=useState("");
+  
+  useEffect(() => {
+  AsyncStorage.getItem("user_id").then(id => setUserId(id));
+}, []);
+
+  const ShowExpense=()=>{
+    const data=getExpenses(userid);//to be checked as the api is returning data in form of object
+
+
+  }
+
+
   const TotalExpense=expensedata.reduce((sum,expense)=>sum + expense.amount,0);
 
 

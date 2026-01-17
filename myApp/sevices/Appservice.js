@@ -7,7 +7,7 @@ export const addExpense = (expense) => {
 };
 
 export const getExpenses = (user_id) => {
-  return api.get("/expense/${user_id}");
+  return api.get("/expense_track/expense/expense/user/${user_id}");
 }
 export const registerUser = (userData) => {
   return api.post("/register", userData);
@@ -20,6 +20,7 @@ export const loginUser = (credentials) => {
 export const setCategory=(category) => {
   return api.post("/expense_track/category/addcate", category);
 }
+
 
 // export const getuser  = () => {
 //   return api.get("/me");

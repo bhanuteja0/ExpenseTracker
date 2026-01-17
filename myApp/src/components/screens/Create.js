@@ -15,15 +15,15 @@ export default function Create({navigation,route}) {
   const [amount,setAmount]=useState(null);
   const [title,setTitle]=useState("");
   const [Category,setCategory]=useState("");
-  const [user_id,setUserId]=useState(1);//hardcoded for now
-  const [categoryId, setCategoryId] = useState(1);//hardcoded for now
+  const [user_id,setUserId]=useState(null);
+  const [categoryId, setCategoryId] = useState(3);//as of now hardcoded as id is not comming from category screen 
   const [expenseType, setExpenseType] = useState("personal");
   const [expenseDate, setExpenseDate] = useState(new Date().toISOString().slice(0,10));
   
 
-//   useEffect(() => {
-//   AsyncStorage.getItem("user_id").then(id => setUserId(id));
-// }, []);
+  useEffect(() => {
+  AsyncStorage.getItem("user_id").then(id => setUserId(id));
+}, []);
 
 
   useEffect(()=>{
