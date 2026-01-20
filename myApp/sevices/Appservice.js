@@ -7,10 +7,10 @@ export const addExpense = (expense) => {
 };
 
 export const getExpenses = (user_id) => {
-  return api.get("/expense_track/expense/expense/user/${user_id}");
+  return api.get(`/expense_track/expense/user/${user_id}`);
 }
 export const registerUser = (userData) => {
-  return api.post("/register", userData);
+  return api.post("/expense_track/users/register", userData);
 }
 
 export const loginUser = (credentials) => {
@@ -21,12 +21,25 @@ export const setCategory=(category) => {
   return api.post("/expense_track/category/addcate", category);
 }
 
+export const delexpense=()=>{
 
-// export const getuser  = () => {
-//   return api.get("/me");
+}
+
+export const editexpense=()=>{
+
+}
+
+export const totalExpense=(user_id)=>{
+  return api.get(`/expense_track/expense/total/${user_id}`)
+
+}
 
 
-// }
+export const getuser  = () => {
+  // return api.get("/me");
+
+
+}
 
 // export const getgroups=()=>{
 //   return api.get("/groups");

@@ -4,12 +4,16 @@ import tailwind from "twrnc";
 import { useMemo } from "react";
 import { ActivityIndicator } from "react-native";
 import { useState } from "react";
+import { Pressable } from "react-native";
 
 export default function Insights(){
 
 
     // const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [filter, setFilter] = useState("total");
+const [open, setOpen] = useState(false);
+
 
 //  
 //   useEffect(() => {
@@ -101,6 +105,7 @@ const COLORS = [
 
 
     return(
+      
       <View style={tailwind`flex-1 bg-white px-6`}>
 
       {/* Header */}
@@ -112,6 +117,46 @@ const COLORS = [
           Expense breakdown by category
         </Text>
       </View>
+
+
+      {/* Filter Dropdown */}
+<View style={tailwind`mt-4 mb-4`}>
+  <Pressable
+    onPress={() => setOpen(!open)}
+    style={tailwind`border border-gray-300 rounded-xl px-4 py-3 flex-row justify-between items-center`}
+  >
+    <Text style={tailwind`text-gray-700 font-medium capitalize`}>
+      {filter}
+    </Text>
+    <Text>▼</Text>
+  </Pressable>
+
+  {open && (
+    <View style={tailwind`border border-gray-200 rounded-xl mt-2 bg-white overflow-hidden`}>
+      {["total", "monthly", "yearly"].map((item) => (
+        <Pressable
+          key={item}
+          onPress={() => {
+            setFilter(item);
+            setOpen(false);
+          }}
+          style={tailwind`px-4 py-3 border-b border-gray-100`}
+        >
+          <Text style={tailwind`capitalize`}>{item}</Text>
+        </Pressable>
+      ))}
+    </View>
+  )}
+</View>
+
+
+
+
+
+
+
+
+
 
       {/* Chart Card */}
       <View style={tailwind`bg-gray-50 rounded-2xl p-6 items-center`}>

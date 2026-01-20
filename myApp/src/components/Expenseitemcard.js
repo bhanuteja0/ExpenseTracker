@@ -1,9 +1,10 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, Pressable } from "react-native";
 import tailwind from "twrnc";
 
-const ExpenseitemCard = ({ item }) => {
+const ExpenseitemCard = ({ item ,navigation}) => {
   return (
+    <Pressable onPress={() => navigation.navigate("Details", { expense: item })}>
     <View
       style={[
         tailwind`bg-white rounded-2xl px-4 py-4 mx-4 mb-3 flex-row items-center justify-between`,
@@ -31,11 +32,11 @@ const ExpenseitemCard = ({ item }) => {
             style={tailwind`text-base font-semibold text-gray-900`}
             numberOfLines={1}
           >
-            {item.title}
+            {item.category_name}
           </Text>
 
           <Text style={tailwind`text-xs text-gray-500 mt-1`}>
-            {item.category} • {item.date}
+            {item.category} • {item.expense_date.split("T")[0]}
           </Text>
         </View>
       </View>
@@ -45,6 +46,7 @@ const ExpenseitemCard = ({ item }) => {
         ₹{item.amount}
       </Text>
     </View>
+    </Pressable>
   );
 };
 

@@ -22,6 +22,8 @@ const categories = [
   { name: "Other", icon: MoreHorizontal },
 ];
 
+// categories.forEach()
+
 
 const Category = ({ navigation }) => {
 

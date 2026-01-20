@@ -1,34 +1,53 @@
 import { View, Text, Pressable } from "react-native";
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import tailwind from "twrnc";
 import { getuser } from "../../../sevices/Appservice";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import EditProfile from "./EditProfile";
 
-export default function Account({navigation}) {
+export default function Account({ navigation }) {
+  const [userid, setuserid] = useState(null);
+  const [user, setuser] = useState(null);
 
-//  const [user,setuser]=useState({
-  
-//  });
+  useEffect(() => {
+    AsyncStorage.getItem("user_id").then(id => {
+      if (id) setuserid(id);
+    });
+  }, []);
 
-//  useEffect(()=>{fetchuser},[]);
+  useEffect(() => {
+    if (userid) fetchuser();
+  }, [userid]);
 
-//  const fetchuser=async()=>{
-//   try{
-//     const res=await getuser();
-//     setuser(res.data);
-//     console.log("USER DATA:",res.data); 
-//   }
-//   catch(error){
-//     console.log("ERROR FETCHING USER DATA:",error.response?.data|| error.message);
-//   }
-//  }
-  const handlelogout=()=>{
+  const fetchuser = async () => {
+    try {
+      // const res = await getuser(userid);
+      // setuser(res.data);
+    } catch (error) {
+      // console.log("ERROR FETCHING USER:", error.response?.data || error.message);
+    }
+  };
+
+  const handlelogout = async () => {
+    await AsyncStorage.clear();
     navigation.replace("Loginscreen");
+  };
 
-  }
+  const Item = ({ title, onPress, danger }) => (
+    <Pressable
+      onPress={onPress}
+      style={tailwind`py-4 border-b border-gray-200`}
+    >
+      <Text
+        style={tailwind`${danger ? "text-red-500" : "text-black"} text-base`}
+      >
+        {title}
+      </Text>
+    </Pressable>
+  );
 
   return (
     <View style={tailwind`flex-1 bg-white px-5 pt-8`}>
-      
       {/* Header */}
       <View style={tailwind`mb-8`}>
         <Text style={tailwind`text-3xl font-bold text-black`}>
@@ -39,53 +58,50 @@ export default function Account({navigation}) {
         </Text>
       </View>
 
-      {/* Appearance Section */}
+      {/* Profile Card */}
+      <View style={tailwind`bg-gray-100 rounded-2xl p-5 mb-8`}>
+        <View style={tailwind`flex-row items-center`}>
+          <View style={tailwind`w-14 h-14 rounded-full bg-black items-center justify-center`}>
+            <Text style={tailwind`text-white text-xl font-bold`}>
+              {user?.name?.[0] || "U"}
+            </Text>
+          </View>
+
+          <View style={tailwind`ml-4`}>
+            <Text style={tailwind`text-lg font-semibold text-black`}>
+              {user?.name || "User"}
+            </Text>
+            <Text style={tailwind`text-gray-500`}>
+              {user?.email || "email@example.com"}
+            </Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Account Settings */}
       <View style={tailwind`mb-8`}>
         <Text style={tailwind`text-xs uppercase tracking-wider text-gray-400 mb-3`}>
-          Appearance
+          Account Settings
         </Text>
 
-        <View style={tailwind`py-4 border-b border-gray-200`}>
-          <Text style={tailwind`text-base text-black`}>
-            Theme
-          </Text>
-          <Text style={tailwind`text-sm text-gray-500 mt-1`}>
-            Light / Dark
-          </Text>
-        </View>
+        <Item title="Edit Profile" onPress={() => navigation.navigate("Accountstack",{screen:"EditProfile"})} />
+        <Item title="Change Profile Photo" onPress={() => navigation.navigate("Accountstack",{screen:"EditProfile"})} />
+        <Item title="Change Password" onPress={() => navigation.navigate("Accountstack",{screen:"ChangePassword"})} />
+        <Item title="Security" onPress={() => navigation.navigate("Accountstack",{screen:"Security"})} />
+        <Item title="Dark Mode" onPress={() => navigation.navigate("Accountstack",{screen:"Theme"})} />
+        <Item title="Language" onPress={() => navigation.navigate("Accountstack",{screen:"Language"})} />
+        <Item title="Export Data" onPress={() => navigation.navigate("Accountstack",{screen:"EditProfile"})} />
+        <Item title="Delete Account" danger onPress={() => navigation.navigate("Accountstack",{screen:"DeleteAccount"})} />
       </View>
 
-      {/* Profile Section */}
+      {/* Session */}
       <View>
         <Text style={tailwind`text-xs uppercase tracking-wider text-gray-400 mb-3`}>
-          Profile
+          Session
         </Text>
 
-        <View style={tailwind`py-4 border-b border-gray-200`}>
-          <Text style={tailwind`text-base text-black`}>
-            Account Settings
-          </Text>
-        </View>
-
-        <View style={tailwind`py-4 border-b border-gray-200`}>
-          <Text style={tailwind`text-base text-black`}>
-            Privacy
-          </Text>
-        </View>
-
-
-        <View style={tailwind`py-4 border-b border-gray-200`}>
-          <Pressable onPress={()=>handlelogout()}>
-          <Text style={tailwind`text-base text-black`}>
-            Logout
-          </Text>
-          </Pressable>
-        </View>
-
-
+        <Item title="Logout" danger onPress={handlelogout} />
       </View>
-      
-
     </View>
   );
 }

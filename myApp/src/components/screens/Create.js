@@ -15,8 +15,8 @@ export default function Create({navigation,route}) {
   const [amount,setAmount]=useState(null);
   const [title,setTitle]=useState("");
   const [Category,setCategory]=useState("");
-  const [user_id,setUserId]=useState(null);
-  const [categoryId, setCategoryId] = useState(3);//as of now hardcoded as id is not comming from category screen 
+  const [userid,setUserId]=useState(null);
+  const [categoryId, setCategoryId] = useState(12);//as of now hardcoded as id is not comming from category screen 
   const [expenseType, setExpenseType] = useState("personal");
   const [expenseDate, setExpenseDate] = useState(new Date().toISOString().slice(0,10));
   
@@ -38,7 +38,7 @@ export default function Create({navigation,route}) {
 
 
   const payload = {
-    paid_by: user_id,
+    paid_by: userid,
     amount: Number(amount),
     category_id: categoryId,
     descriptions: title,
@@ -120,10 +120,10 @@ export default function Create({navigation,route}) {
     {/* Title */}
     <View style={tailwind`mb-5`}>
       <Text style={tailwind`text-sm text-gray-500 mb-2`}>
-        Title
+        Description
       </Text>
       <TextInput
-        placeholder="Enter title"
+        placeholder="Enter Description"
         placeholderTextColor="#9CA3AF"
         value={title}
         onChangeText={setTitle}

@@ -18,14 +18,46 @@ import tailwind from "twrnc";
 export default function Loginscreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [user_pwd, setPassword] = useState("");
+  const [errors, setErrors] = useState({});
+const [loading, setLoading] = useState(false);
+
   const [message, setMessage] = useState("");
 
+
+  const validate = () => {
+  let newErrors = {};
+
+  if (!email.trim()) {
+    newErrors.email = "Email is required";
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    newErrors.email = "Invalid email format";
+  }
+
+  if (!user_pwd.trim()) {
+    newErrors.password = "Password is required";
+  } else if (user_pwd.length < 6) {
+    newErrors.password = "Minimum 6 characters required";
+  }
+
+  setErrors(newErrors);
+  return Object.keys(newErrors).length === 0;
+};
+
+
+
+
 const handlelogin = async () => {
+  if (!validate()) return;
   try {
+   setLoading(true);
+
     const res = await loginUser({
       email,
       user_pwd,
     });
+    // console.log(res.data.token);
+    // console.log(res.data.user_id);
+    // console.log(res.data.user_name);
 
      await AsyncStorage.setItem("token", res.data.token);
     await AsyncStorage.setItem("user_id", res.data.user_id.toString());
@@ -33,9 +65,11 @@ const handlelogin = async () => {
 
 
     navigation.replace("bottomtabs");
-  } catch (error) {
-    console.log("LOGIN ERROR:", error.response?.data || error.message);
-    Alert.alert(error.response?.data?.message || "Login failed");
+  }catch (error) {
+    console.log("Login error:", error.response?.data || error.message);
+    setErrors({ general: "Invalid email or password" });
+  } finally {
+    setLoading(false);
   }
 };
 
