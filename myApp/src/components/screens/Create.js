@@ -6,6 +6,8 @@ import tailwind from "twrnc";
 import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { addExpense } from "../../../sevices/Appservice";
+import DateTimePicker from "@react-native-community/datetimepicker";
+
 
 
 
@@ -16,9 +18,15 @@ export default function Create({navigation,route}) {
   const [title,setTitle]=useState("");
   const [Category,setCategory]=useState("");
   const [userid,setUserId]=useState(null);
-  const [categoryId, setCategoryId] = useState(12);//as of now hardcoded as id is not comming from category screen 
+  const [categoryId, setCategoryId] = useState(0);//as of now hardcoded as id is not comming from category screen 
   const [expenseType, setExpenseType] = useState("personal");
   const [expenseDate, setExpenseDate] = useState(new Date().toISOString().slice(0,10));
+
+  const [showPicker, setShowPicker] = useState(false);
+
+
+  // const [showDatePicker, setShowDatePicker] = useState(false);
+
   
 
   useEffect(() => {
@@ -28,8 +36,9 @@ export default function Create({navigation,route}) {
 
   useEffect(()=>{
     if(route.params?.category){
-      console.log("category selected:",route.params.category);
-      setCategory(route.params.category);
+      console.log("category selected:",route.params);
+      setCategory(route.params.category); // id is not comming once add same details that are there in database
+      setCategoryId(route.params.category_id);
     }
 
 
@@ -130,21 +139,36 @@ export default function Create({navigation,route}) {
         style={tailwind`border border-gray-300 rounded-xl px-4 py-3 text-black`}
       />
     </View>
-    <View> 
-       <Text style={tailwind`text-sm text-gray-500 mb-2`}>
-        Expense Date
-      </Text>
-      <TextInput
-        placeholder="YYYY-MM-DD"
-        placeholderTextColor="#9CA3AF"
-        value={expenseDate}
-        onChangeText={setExpenseDate}
-        style={tailwind`border border-gray-300 rounded-xl px-4 py-3 text-black`}
-      />
+    <View>
+  <Text style={tailwind`text-sm text-gray-500 mb-2`}>
+    Expense Date
+  </Text>
 
+  <Pressable
+    onPress={() => setShowPicker(true)}
+    style={tailwind`border border-gray-300 rounded-xl px-4 py-3`}
+  >
+    <Text style={tailwind`text-black`}>
+      {expenseDate || "Select date"}
+    </Text>
+  </Pressable>
 
+  {showPicker && (
+    <DateTimePicker
+      value={expenseDate ? new Date(expenseDate) : new Date()}
+      mode="date"
+      display="calendar"
+      onChange={(event, selectedDate) => {
+        setShowPicker(false);
+        if (selectedDate) {
+          const formatted = selectedDate.toISOString().split("T")[0];
+          setExpenseDate(formatted);
+        }
+      }}
+    />
+  )}
+</View>
 
-    </View>
 
     {/* Category */}
     <View style={tailwind`mb-6`}>

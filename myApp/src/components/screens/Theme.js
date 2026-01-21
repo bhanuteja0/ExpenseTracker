@@ -1,8 +1,9 @@
+import { View } from 'lucide-react-native'
 import React from 'react'
 
 function Theme() {
   return (
-    <div>Theme</div>
+    <View>Theme</View>
   )
 }
 

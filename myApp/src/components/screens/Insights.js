@@ -1,86 +1,94 @@
-import { View,Text } from "react-native";
-import { PieChart } from "react-native-gifted-charts";
+import { View, Text, Pressable, ActivityIndicator, ScrollView } from "react-native";
+import { PieChart, BarChart } from "react-native-gifted-charts";
 import tailwind from "twrnc";
-import { useMemo } from "react";
-import { ActivityIndicator } from "react-native";
-import { useState } from "react";
-import { Pressable } from "react-native";
+import { useEffect, useMemo, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export default function Insights(){
-
-
-    // const [expenses, setExpenses] = useState([]);
+export default function Insights() {
   const [loading, setLoading] = useState(false);
   const [filter, setFilter] = useState("total");
-const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [userid, setuserid] = useState(null);
 
+  const currentYear = new Date().getFullYear();
+  const startYear = 2020;
 
-//  
-//   useEffect(() => {
-//     fetchExpenses();
-//   }, []);
+  const [selectedYear, setSelectedYear] = useState(currentYear);
+  const [yearlyTotal, setYearlyTotal] = useState(0);
+  const [yearOpen, setYearOpen] = useState(false);
 
-//   const fetchExpenses = async () => {
-//     try {
-//       const res = await api.get("/expenses");
-//       setExpenses(res.data); // backend array
-//     } catch (error) {
-//       console.log("Failed to fetch expenses", error);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
+  useEffect(() => {
+    AsyncStorage.getItem("user_id").then(id => setuserid(id));
+  }, []);
 
+  const years = Array.from(
+    { length: currentYear - startYear + 1 },
+    (_, i) => startYear + i
+  ).reverse();
 
-const COLORS = [
-  "#3B82F6",
-  "#22C55E",
-  "#EF4444",
-  "#F59E0B",
-  "#8B5CF6",
-];
+  // ---------------- TOTAL PIE (STATIC SAMPLE) ----------------
+  const expenses = [
+    { id: 1, amount: 1200, category: "Food" },
+    { id: 2, amount: 300, category: "Transport" },
+    { id: 3, amount: 800, category: "Food" },
+    { id: 4, amount: 500, category: "Entertainment" },
+    { id: 5, amount: 1500, category: "Utilities" },
+  ];
 
-    const expenses=[
-       { "id": 1, "title": "Groceries", "amount": 1200, "category": "Food" },
-  { "id": 2, "title": "Bus", "amount": 300, "category": "Transport" },
-  { "id": 3, "title": "Dinner", "amount": 800, "category": "Food" },
-  { "id": 4, "title": "Movie", "amount": 500, "category": "Entertainment" },
-  { "id": 5, "title": "Electricity Bill", "amount": 1500, "category": "Utilities" },
-  { "id": 6, "title": "Gym", "amount": 700, "category": "Health" },
-    ];
+  const COLORS = ["#3B82F6", "#22C55E", "#EF4444", "#F59E0B", "#8B5CF6"];
 
-
- const chartData = useMemo(() => {
-    if (expenses.length === 0) return [];
-
+  const pieChartData = useMemo(() => {
     const grouped = {};
-
     expenses.forEach(item => {
-      if (!grouped[item.category]) {
-        grouped[item.category] = 0;
-      }
-      grouped[item.category] += Number(item.amount);
+      grouped[item.category] = (grouped[item.category] || 0) + item.amount;
     });
 
-    return Object.keys(grouped).map((category, index) => ({
-      value: grouped[category],
-      text: category,
+    return Object.keys(grouped).map((cat, index) => ({
+      value: grouped[cat],
+      text: cat,
       color: COLORS[index % COLORS.length],
     }));
-  }, [expenses]);
-
-
-
+  }, []);
 
   const totalExpense = useMemo(() => {
-    return expenses.reduce((sum, item) => sum + Number(item.amount), 0);
-  }, [expenses]);
+    return expenses.reduce((sum, item) => sum + item.amount, 0);
+  }, []);
 
+  // ---------------- FETCH YEARLY TOTAL ----------------
+  useEffect(() => {
+    if (!userid || filter !== "yearly") return;
 
+    const fetchYearlyExpense = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(
+          `http://YOUR_IP:PORT/expense/year/${userid}?year=${selectedYear}`
+        );
+        const data = await res.json();
+        const total = data[0]?.total_amount || 0;
+        setYearlyTotal(total);
+      } catch (error) {
+        console.error("Error fetching yearly expense:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    fetchYearlyExpense();
+  }, [selectedYear, userid, filter]);
 
+  // ---------------- BAR CHART DATA ----------------
+  const yearlyBarData = useMemo(() => {
+    return [
+      {
+        value: yearlyTotal,
+        label: selectedYear.toString(),
+        frontColor: "#3B82F6",
+      },
+    ];
+  }, [yearlyTotal, selectedYear]);
 
-   if (loading) {
+  if (loading) {
     return (
       <View style={tailwind`flex-1 justify-center items-center bg-white`}>
         <ActivityIndicator size="large" />
@@ -88,131 +96,121 @@ const COLORS = [
     );
   }
 
-  if (chartData.length === 0) {
-    return (
-      <View style={tailwind`flex-1 justify-center items-center bg-white`}>
-        <Text style={tailwind`text-gray-400`}>
-          No expense data available
-        </Text>
-      </View>
-    );
-  }
+  return (
+    <ScrollView style={tailwind`flex-1 bg-white px-6`}>
 
-
-
-
-
-
-
-    return(
-      
-      <View style={tailwind`flex-1 bg-white px-6`}>
-
-      {/* Header */}
+      {/* HEADER */}
       <View style={tailwind`mt-14 mb-6`}>
         <Text style={tailwind`text-2xl font-semibold text-gray-900`}>
           Insights
         </Text>
         <Text style={tailwind`text-sm text-gray-500 mt-1`}>
-          Expense breakdown by category
+          Expense analysis
         </Text>
       </View>
 
-
-      {/* Filter Dropdown */}
-<View style={tailwind`mt-4 mb-4`}>
-  <Pressable
-    onPress={() => setOpen(!open)}
-    style={tailwind`border border-gray-300 rounded-xl px-4 py-3 flex-row justify-between items-center`}
-  >
-    <Text style={tailwind`text-gray-700 font-medium capitalize`}>
-      {filter}
-    </Text>
-    <Text>▼</Text>
-  </Pressable>
-
-  {open && (
-    <View style={tailwind`border border-gray-200 rounded-xl mt-2 bg-white overflow-hidden`}>
-      {["total", "monthly", "yearly"].map((item) => (
+      {/* FILTER DROPDOWN */}
+      <View style={tailwind`mb-4`}>
         <Pressable
-          key={item}
-          onPress={() => {
-            setFilter(item);
-            setOpen(false);
-          }}
-          style={tailwind`px-4 py-3 border-b border-gray-100`}
+          onPress={() => setOpen(!open)}
+          style={tailwind`border border-gray-300 rounded-xl px-4 py-3 flex-row justify-between`}
         >
-          <Text style={tailwind`capitalize`}>{item}</Text>
+          <Text style={tailwind`capitalize font-medium`}>{filter}</Text>
+          <Text>▼</Text>
         </Pressable>
-      ))}
-    </View>
-  )}
-</View>
 
+        {open && (
+          <View style={tailwind`border border-gray-200 rounded-xl mt-2`}>
+            {["total", "yearly"].map(item => (
+              <Pressable
+                key={item}
+                onPress={() => {
+                  setFilter(item);
+                  setOpen(false);
+                }}
+                style={tailwind`px-4 py-3 border-b border-gray-100`}
+              >
+                <Text style={tailwind`capitalize`}>{item}</Text>
+              </Pressable>
+            ))}
+          </View>
+        )}
+      </View>
 
+      {/* YEAR DROPDOWN */}
+      {filter === "yearly" && (
+        <View style={tailwind`mb-4`}>
+          <Pressable
+            onPress={() => setYearOpen(!yearOpen)}
+            style={tailwind`border border-gray-300 rounded-xl px-4 py-3 flex-row justify-between`}
+          >
+            <Text>{selectedYear}</Text>
+            <Text>▼</Text>
+          </Pressable>
 
-
-
-
-
-
-
-
-      {/* Chart Card */}
-      <View style={tailwind`bg-gray-50 rounded-2xl p-6 items-center`}>
-        <PieChart
-          donut
-          radius={110}
-          innerRadius={70}
-          data={chartData}
-          centerLabelComponent={() => (
-            <View style={tailwind`items-center`}>
-              <Text style={tailwind`text-xl font-semibold`}>
-                ₹{totalExpense}
-              </Text>
-              <Text style={tailwind`text-sm text-gray-500`}>
-                Total
-              </Text>
+          {yearOpen && (
+            <View style={tailwind`border border-gray-200 rounded-xl mt-2 max-h-60`}>
+              {years.map(year => (
+                <Pressable
+                  key={year}
+                  onPress={() => {
+                    setSelectedYear(year);
+                    setYearOpen(false);
+                  }}
+                  style={tailwind`px-4 py-3 border-b border-gray-100`}
+                >
+                  <Text style={tailwind`${year === selectedYear ? "font-bold" : ""}`}>
+                    {year}
+                  </Text>
+                </Pressable>
+              ))}
             </View>
           )}
-        />
-      </View>
-      <View>
-        <View>
-        <Text style={tailwind`text-lg font-semibold mt-6 mb-2`}>
-
-          LEGEND
-        </Text>
         </View>
-          <View >
-          {expenses.map((item,index)=>(
-            
-              <Text key={index} style={tailwind`mb-6 font-medium `} >
-                
-               {item.id} {item.category}: {item.amount}
+      )}
 
+      {/* CHART CARD */}
+      <View style={tailwind`bg-gray-50 rounded-2xl p-6 items-center`}>
 
-              </Text>
-              
+        {filter === "total" && (
+          <PieChart
+            donut
+            radius={110}
+            innerRadius={70}
+            data={pieChartData}
+            centerLabelComponent={() => (
+              <View style={tailwind`items-center`}>
+                <Text style={tailwind`text-xl font-semibold`}>
+                  ₹{totalExpense}
+                </Text>
+                <Text style={tailwind`text-sm text-gray-500`}>
+                  Total
+                </Text>
+              </View>
+            )}
+          />
+        )}
 
+        {filter === "yearly" && (
+          <>
+            <BarChart
+              data={yearlyBarData}
+              barWidth={60}
+              spacing={40}
+              hideRules
+              yAxisThickness={0}
+              xAxisThickness={0}
+              noOfSections={4}
+            />
 
-            
-
-
-
-          ))}
-          </View>
-
-
-
-
-        
-
+            <Text style={tailwind`mt-4 text-lg font-semibold`}>
+              {selectedYear} Total: ₹{yearlyTotal}
+            </Text>
+          </>
+        )}
 
       </View>
 
-    </View>
-
-
-    );
+    </ScrollView>
+  );
 }

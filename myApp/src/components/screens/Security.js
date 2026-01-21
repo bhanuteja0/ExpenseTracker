@@ -1,8 +1,9 @@
 import React from 'react'
+import { View } from 'react-native'
 
 function Security() {
   return (
-    <div>Security</div>
+    <View>security</View>
   )
 }
 

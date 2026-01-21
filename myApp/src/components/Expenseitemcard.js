@@ -3,7 +3,9 @@ import { View, Text, Pressable } from "react-native";
 import tailwind from "twrnc";
 
 const ExpenseitemCard = ({ item ,navigation}) => {
+  //  console.log(item);
   return (
+   
     <Pressable onPress={() => navigation.navigate("Details", { expense: item })}>
     <View
       style={[

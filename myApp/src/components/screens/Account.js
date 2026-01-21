@@ -1,43 +1,55 @@
-import { View, Text, Pressable } from "react-native";
 import React, { useEffect, useState } from "react";
+import { View, Text, Pressable } from "react-native";
 import tailwind from "twrnc";
-import { getuser } from "../../../sevices/Appservice";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import EditProfile from "./EditProfile";
+import Icon from "react-native-vector-icons/Ionicons";
+import { getuser } from "../../../sevices/Appservice";
 
 export default function Account({ navigation }) {
-  const [userid, setuserid] = useState(null);
-  const [user, setuser] = useState(null);
+  const [userId, setUserId] = useState(null);
+  const [user, setUser] = useState(null);
 
+  // Get user ID
   useEffect(() => {
     AsyncStorage.getItem("user_id").then(id => {
-      if (id) setuserid(id);
+      if (id) setUserId(id);
     });
   }, []);
 
+  // Fetch user from backend
   useEffect(() => {
-    if (userid) fetchuser();
-  }, [userid]);
+    if (userId) {
+      loadUser();
+    }
+  }, [userId]);
 
-  const fetchuser = async () => {
+  const loadUser = async () => {
     try {
-      // const res = await getuser(userid);
-      // setuser(res.data);
+      const res = await getuser(userId);
+      // console.log(res.data);
+      setUser(res.data[0]); // change if your API returns { data: {...} }
     } catch (error) {
-      // console.log("ERROR FETCHING USER:", error.response?.data || error.message);
+      console.log("Load user error:", error.response?.data || error.message);
     }
   };
+  // console.log();
 
-  const handlelogout = async () => {
+  const handleLogout = async () => {
     await AsyncStorage.clear();
     navigation.replace("Loginscreen");
   };
 
-  const Item = ({ title, onPress, danger }) => (
+  const Item = ({ title, icon, onPress, danger }) => (
     <Pressable
       onPress={onPress}
-      style={tailwind`py-4 border-b border-gray-200`}
+      style={tailwind`flex-row items-center py-4 border-b border-gray-200`}
     >
+      <Icon
+        name={icon}
+        size={20}
+        color={danger ? "red" : "#111"}
+        style={tailwind`mr-4`}
+      />
       <Text
         style={tailwind`${danger ? "text-red-500" : "text-black"} text-base`}
       >
@@ -48,17 +60,13 @@ export default function Account({ navigation }) {
 
   return (
     <View style={tailwind`flex-1 bg-white px-5 pt-8`}>
-      {/* Header */}
-      <View style={tailwind`mb-8`}>
-        <Text style={tailwind`text-3xl font-bold text-black`}>
-          Account
-        </Text>
-        <Text style={tailwind`text-gray-500 mt-2`}>
-          Manage your preferences
-        </Text>
-      </View>
+      {/* HEADER */}
+      <Text style={tailwind`text-3xl font-bold`}>Account</Text>
+      <Text style={tailwind`text-gray-500 mb-6`}>
+        Manage your preferences
+      </Text>
 
-      {/* Profile Card */}
+      {/* PROFILE CARD */}
       <View style={tailwind`bg-gray-100 rounded-2xl p-5 mb-8`}>
         <View style={tailwind`flex-row items-center`}>
           <View style={tailwind`w-14 h-14 rounded-full bg-black items-center justify-center`}>
@@ -68,8 +76,8 @@ export default function Account({ navigation }) {
           </View>
 
           <View style={tailwind`ml-4`}>
-            <Text style={tailwind`text-lg font-semibold text-black`}>
-              {user?.name || "User"}
+            <Text style={tailwind`text-lg font-semibold`}>
+              {user?.user_name || "User"}
             </Text>
             <Text style={tailwind`text-gray-500`}>
               {user?.email || "email@example.com"}
@@ -78,30 +86,50 @@ export default function Account({ navigation }) {
         </View>
       </View>
 
-      {/* Account Settings */}
-      <View style={tailwind`mb-8`}>
-        <Text style={tailwind`text-xs uppercase tracking-wider text-gray-400 mb-3`}>
-          Account Settings
-        </Text>
+      {/* MENU */}
+      <Item
+        title="Edit Profile"
+        icon="person-outline"
+        onPress={() => navigation.navigate("EditProfile")}
+      />
 
-        <Item title="Edit Profile" onPress={() => navigation.navigate("Accountstack",{screen:"EditProfile"})} />
-        <Item title="Change Profile Photo" onPress={() => navigation.navigate("Accountstack",{screen:"EditProfile"})} />
-        <Item title="Change Password" onPress={() => navigation.navigate("Accountstack",{screen:"ChangePassword"})} />
-        <Item title="Security" onPress={() => navigation.navigate("Accountstack",{screen:"Security"})} />
-        <Item title="Dark Mode" onPress={() => navigation.navigate("Accountstack",{screen:"Theme"})} />
-        <Item title="Language" onPress={() => navigation.navigate("Accountstack",{screen:"Language"})} />
-        <Item title="Export Data" onPress={() => navigation.navigate("Accountstack",{screen:"EditProfile"})} />
-        <Item title="Delete Account" danger onPress={() => navigation.navigate("Accountstack",{screen:"DeleteAccount"})} />
-      </View>
+      <Item
+        title="Change Password"
+        icon="lock-closed-outline"
+        onPress={() => navigation.navigate("ChangePassword")}
+      />
 
-      {/* Session */}
-      <View>
-        <Text style={tailwind`text-xs uppercase tracking-wider text-gray-400 mb-3`}>
-          Session
-        </Text>
+      <Item
+        title="Security"
+        icon="shield-checkmark-outline"
+        onPress={() => navigation.navigate("Security")}
+      />
 
-        <Item title="Logout" danger onPress={handlelogout} />
-      </View>
+      <Item
+        title="Theme"
+        icon="color-palette-outline"
+        onPress={() => navigation.navigate("Theme")}
+      />
+
+      <Item
+        title="Language"
+        icon="language-outline"
+        onPress={() => navigation.navigate("Language")}
+      />
+
+      <Item
+        title="Delete Account"
+        icon="trash-outline"
+        danger
+        onPress={() => navigation.navigate("DeleteAccount")}
+      />
+
+      <Item
+        title="Logout"
+        icon="log-out-outline"
+        danger
+        onPress={handleLogout}
+      />
     </View>
   );
 }

@@ -4,23 +4,27 @@ import tailwind from 'twrnc'
 import { FlatList } from 'react-native';
 import { setCategory } from '../../../sevices/Appservice';
 import { useState } from 'react';
+import { getcategory } from '../../../sevices/Appservice';
 
-import {Utensils,Cable, ShoppingBag,FileText,Film, Heart,MoreHorizontal, Merge,} from "lucide-react-native";
+import {
+  Utensils,Bus,ShoppingBag,FileText,Film,Heart,BookOpen, Plane, ShoppingCart,Fuel,Smartphone,MoreHorizontal,Receipt,Wallet, Home,Music} from "lucide-react-native";
+
 
 const categories = [
-  { name: "Food", icon: Utensils },
-  { name: "Transport", icon: Cable },
-  { name: "Shopping", icon: ShoppingBag },
-  { name: "Bills", icon: FileText },
-  { name: "Entertainment", icon: Film },
-  { name: "Health", icon: Heart },
-  {name:"Education",icon:FileText},
-  {name:"Travel",icon:Film},
-  {name:"Groceries",icon:ShoppingBag},
-  {name:"fuel",icon:Cable},
-  {name:"phone/Internet",icon:Utensils},
-  { name: "Other", icon: MoreHorizontal },
+  { id: 102, name: "Food", icon: Utensils },
+  { id: 101, name: "Transport", icon: Bus },
+  { id: 103, name: "Shopping", icon: ShoppingBag },
+  { id: 104, name: "Bills", icon: Receipt },
+  { id: 105, name: "Entertainment", icon: Film },
+  { id: 106, name: "Health", icon: Heart },
+  { id: 107, name: "Education", icon: BookOpen },
+  { id: 108, name: "Travel", icon: Plane },
+  { id: 109, name: "Groceries", icon: ShoppingCart },
+  { id: 110, name: "Fuel", icon: Fuel },
+  { id: 116, name: "Phone / Internet", icon: Smartphone },
+  { id: 115, name: "Other", icon: MoreHorizontal }
 ];
+  
 
 // categories.forEach()
 
@@ -44,7 +48,7 @@ const Category = ({ navigation }) => {
 
     navigation.popTo("bottomtabs", {
       screen: "Create",
-      params: { category: category.name },merge: true
+      params: { category: category.name,category_id:category.id },merge: true
     });
   };
 
@@ -128,8 +132,6 @@ const renderItem = ({ item }) => {
     <Text style={tailwind`text-3xl font-bold text-black mt-4`}>
       Select Category
     </Text>
-
-    <Text>Select</Text>
 
     <FlatList
       data={categories}

@@ -86,10 +86,10 @@ const handlelogin = async () => {
       {/* App Title */}
       <View style={tailwind`mb-10`}>
         <Text style={tailwind`text-3xl font-bold text-black text-center`}>
-          Expense Tracker
+          ExpensyWise
         </Text>
         <Text style={tailwind`text-gray-500 text-center mt-2`}>
-          Manage your expenses easily
+          Manage your expenses Wisely
         </Text>
       </View>
 

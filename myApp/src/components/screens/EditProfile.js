@@ -1,18 +1,46 @@
 import { View, Text, TextInput, TouchableOpacity } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import tailwind from "twrnc";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { getuser } from "../../../sevices/Appservice";
 
-export default function EditProfile() {
-  const navigation = useNavigation();
+export default function EditProfile({navigation}) {
+  // const navigation = useNavigation();
 
+  const [userId, setUserId] = useState(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
 
+  useEffect(() => {
+    AsyncStorage.getItem("user_id").then(id => {
+      if (id) setUserId(id);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (userId) loadUser();
+  }, [userId]);
+
+  const loadUser = async () => {
+    try {
+      const res = await getuser(userId);
+      if (res.data && res.data.length > 0) {
+        const u = res.data[0];
+        setName(u.user_name);
+        setEmail(u.email);
+        setPhone(u.phone);
+      }
+    } catch (error) {
+      console.log("Load user error:", error.response?.data || error.message);
+    }
+  };
+
   const handleSave = () => {
-    console.log(name, email, phone);
-    // API CALL HERE
+    console.log("Saving name only:", name);
+    // Later: API call to update only name
+    navigation.goBack();
   };
 
   return (
@@ -27,7 +55,7 @@ export default function EditProfile() {
         </Text>
       </View>
 
-      {/* Inputs */}
+      {/* Name (Editable) */}
       <View style={tailwind`mb-6`}>
         <Text style={tailwind`text-gray-400 mb-2`}>Name</Text>
         <TextInput
@@ -38,25 +66,30 @@ export default function EditProfile() {
         />
       </View>
 
+      {/* Email (Locked) */}
       <View style={tailwind`mb-6`}>
         <Text style={tailwind`text-gray-400 mb-2`}>Email</Text>
         <TextInput
           value={email}
-          onChangeText={setEmail}
-          placeholder="Enter email"
-          style={tailwind`border border-gray-200 rounded-xl p-4`}
+          editable={false}
+          style={tailwind`border border-gray-200 rounded-xl p-4 bg-gray-100 text-gray-500`}
         />
+        <Text style={tailwind`text-xs text-orange-500 mt-1`}>
+          Verification coming soon
+        </Text>
       </View>
 
+      {/* Phone (Locked) */}
       <View style={tailwind`mb-6`}>
         <Text style={tailwind`text-gray-400 mb-2`}>Phone</Text>
         <TextInput
           value={phone}
-          onChangeText={setPhone}
-          placeholder="Enter phone"
-          keyboardType="numeric"
-          style={tailwind`border border-gray-200 rounded-xl p-4`}
+          editable={false}
+          style={tailwind`border border-gray-200 rounded-xl p-4 bg-gray-100 text-gray-500`}
         />
+        <Text style={tailwind`text-xs text-orange-500 mt-1`}>
+          Verification coming soon
+        </Text>
       </View>
 
       {/* Save Button */}

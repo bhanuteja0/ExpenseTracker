@@ -33,6 +33,8 @@ const Homescreen=({navigation})=> {
  const [total,settotal]=useState(0);
 //  const [TotalExpense,setTotalExpense]=useState(0);
 
+
+
  
 
   
@@ -46,7 +48,9 @@ const Homescreen=({navigation})=> {
     const res = await getExpenses(userid);
     const Total=await totalExpense(userid);
     setdata(res.data);
-    settotal(Total.data.total_amount);
+    // console.log(Total.data[0].total_amount);
+    settotal(Total.data[0].total_amount);
+    // console.log(total);
     
     // console.log(Total.data.total_amount);
     // console.log(res.data);
@@ -84,13 +88,16 @@ const Homescreen=({navigation})=> {
   >
     <Text style={tailwind`text-gray-400 text-sm`}>Total Expense</Text>
     <Text style={tailwind`text-white text-2xl font-bold mt-2`}>
-      ₹ {total}
+      ₹  {Number(total || 0).toFixed(2)}
+
     </Text>
   </View>
 
     
 
   <View style={tailwind`flex-1 mt-4`}>
+
+
     
     <FlatList
       data={expdata}

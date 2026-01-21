@@ -1,8 +1,9 @@
+import { View } from 'lucide-react-native'
 import React from 'react'
 
 function AccDetails() {
   return (
-    <div>AccDetails</div>
+    <View>Accdetails</View>
   )
 }
 
