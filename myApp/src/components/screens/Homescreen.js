@@ -48,8 +48,8 @@ const Homescreen=({navigation})=> {
     const res = await getExpenses(userid);
     const Total=await totalExpense(userid);
     setdata(res.data);
-    // console.log(Total.data[0].total_amount);
-    settotal(Total.data[0].total_amount);
+    console.log(Total.data);
+    settotal(Total.data);
     // console.log(total);
     
     // console.log(Total.data.total_amount);
@@ -88,7 +88,7 @@ const Homescreen=({navigation})=> {
   >
     <Text style={tailwind`text-gray-400 text-sm`}>Total Expense</Text>
     <Text style={tailwind`text-white text-2xl font-bold mt-2`}>
-      ₹  {Number(total || 0).toFixed(2)}
+      ₹  {total?.total_amount}
 
     </Text>
   </View>

@@ -16,6 +16,7 @@ import Language from "../screens/Language";
 import Theme from "../screens/Theme";
 import Loginscreen from "../screens/Loginscreen";
 import Register from "../screens/Register";
+import Groups from "../screens/Groups";
 
 
 import { Home, BarChart2, PlusCircle, User } from "lucide-react-native";
@@ -85,6 +86,7 @@ export default function AppNavigation() {
   />
 
   <Stack.Screen name="Details" component={Details} />
+  <Stack.Screen name="Groups" component={Groups} />
 </Stack.Navigator>
 
   );

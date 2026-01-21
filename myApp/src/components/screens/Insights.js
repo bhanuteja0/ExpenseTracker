@@ -16,6 +16,8 @@ export default function Insights() {
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [yearlyTotal, setYearlyTotal] = useState(0);
   const [yearOpen, setYearOpen] = useState(false);
+  const [allYearsData, setAllYearsData] = useState([]);
+  const [overallTotal, setOverallTotal] = useState(0);
 
   useEffect(() => {
     AsyncStorage.getItem("user_id").then(id => setuserid(id));
@@ -54,39 +56,70 @@ export default function Insights() {
     return expenses.reduce((sum, item) => sum + item.amount, 0);
   }, []);
 
-  // ---------------- FETCH YEARLY TOTAL ----------------
+  // ---------------- FETCH YEARLY DATA ----------------
   useEffect(() => {
     if (!userid || filter !== "yearly") return;
 
     const fetchYearlyExpense = async () => {
       try {
         setLoading(true);
+        // Fetch all years data (no year parameter)
         const res = await fetch(
-          `http://YOUR_IP:PORT/expense/year/${userid}?year=${selectedYear}`
+          `http://10.85.245.66:5050/expense_track/expense/byyear/${userid}`
         );
         const data = await res.json();
-        const total = data[0]?.total_amount || 0;
-        setYearlyTotal(total);
+        
+        // Set all years data
+        setAllYearsData(data.expenses_by_year || []);
+        setOverallTotal(data.overall_total || 0);
       } catch (error) {
         console.error("Error fetching yearly expense:", error);
+        setAllYearsData([]);
+        setYearlyTotal(0);
+        setOverallTotal(0);
       } finally {
         setLoading(false);
       }
     };
 
     fetchYearlyExpense();
-  }, [selectedYear, userid, filter]);
+  }, [userid, filter]);
+
+  // Update yearly total when selected year changes
+  useEffect(() => {
+    if (allYearsData.length > 0) {
+      const selectedYearData = allYearsData.find(
+        (yearData) => yearData.year === selectedYear
+      );
+      setYearlyTotal(selectedYearData?.total_amount || 0);
+    }
+  }, [selectedYear, allYearsData]);
 
   // ---------------- BAR CHART DATA ----------------
   const yearlyBarData = useMemo(() => {
-    return [
-      {
-        value: yearlyTotal,
-        label: selectedYear.toString(),
-        frontColor: "#3B82F6",
-      },
-    ];
-  }, [yearlyTotal, selectedYear]);
+    if (allYearsData.length === 0) {
+      // Fallback to single year if no data
+      return [
+        {
+          value: yearlyTotal,
+          label: selectedYear.toString(),
+          frontColor: "#3B82F6",
+        },
+      ];
+    }
+
+    // Create bar chart data for all years
+    return allYearsData.map((yearData, index) => ({
+      value: parseFloat(yearData.total_amount) || 0,
+      label: yearData.year.toString(),
+      frontColor: COLORS[index % COLORS.length],
+      topLabelComponent: () => (
+        <Text style={{ fontSize: 10, color: "#666" }}>
+          ₹{Math.round(yearData.total_amount || 0)}
+        </Text>
+      ),
+    }));
+  }, [allYearsData, yearlyTotal, selectedYear]);
 
   if (loading) {
     return (
@@ -138,36 +171,7 @@ export default function Insights() {
       </View>
 
       {/* YEAR DROPDOWN */}
-      {filter === "yearly" && (
-        <View style={tailwind`mb-4`}>
-          <Pressable
-            onPress={() => setYearOpen(!yearOpen)}
-            style={tailwind`border border-gray-300 rounded-xl px-4 py-3 flex-row justify-between`}
-          >
-            <Text>{selectedYear}</Text>
-            <Text>▼</Text>
-          </Pressable>
-
-          {yearOpen && (
-            <View style={tailwind`border border-gray-200 rounded-xl mt-2 max-h-60`}>
-              {years.map(year => (
-                <Pressable
-                  key={year}
-                  onPress={() => {
-                    setSelectedYear(year);
-                    setYearOpen(false);
-                  }}
-                  style={tailwind`px-4 py-3 border-b border-gray-100`}
-                >
-                  <Text style={tailwind`${year === selectedYear ? "font-bold" : ""}`}>
-                    {year}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-          )}
-        </View>
-      )}
+      
 
       {/* CHART CARD */}
       <View style={tailwind`bg-gray-50 rounded-2xl p-6 items-center`}>
@@ -193,19 +197,39 @@ export default function Insights() {
 
         {filter === "yearly" && (
           <>
-            <BarChart
-              data={yearlyBarData}
-              barWidth={60}
-              spacing={40}
-              hideRules
-              yAxisThickness={0}
-              xAxisThickness={0}
-              noOfSections={4}
-            />
+            {allYearsData.length > 0 ? (
+              <>
+                <BarChart
+                  data={yearlyBarData}
+                  barWidth={allYearsData.length > 3 ? 40 : 60}
+                  spacing={allYearsData.length > 3 ? 20 : 40}
+                  hideRules
+                  yAxisThickness={0}
+                  xAxisThickness={0}
+                  noOfSections={4}
+                  width={allYearsData.length > 3 ? allYearsData.length * 60 : 300}
+                />
 
-            <Text style={tailwind`mt-4 text-lg font-semibold`}>
-              {selectedYear} Total: ₹{yearlyTotal}
-            </Text>
+                <View style={tailwind`mt-4 items-center`}>
+                  <Text style={tailwind`text-lg font-semibold`}>
+                    Overall Total: ₹{Math.round(overallTotal)}
+                  </Text>
+                  {allYearsData.find((y) => y.year === selectedYear) && (
+                    <Text style={tailwind`text-sm text-gray-600 mt-1`}>
+                      {selectedYear} Total: ₹{Math.round(
+                        allYearsData.find((y) => y.year === selectedYear)?.total_amount || 0
+                      )}
+                    </Text>
+                  )}
+                </View>
+              </>
+            ) : (
+              <View style={tailwind`items-center py-8`}>
+                <Text style={tailwind`text-gray-500`}>
+                  No expense data available
+                </Text>
+              </View>
+            )}
           </>
         )}
 

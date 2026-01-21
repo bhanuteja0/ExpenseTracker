@@ -89,11 +89,11 @@ export default function Account({ navigation }) {
       {/* MENU */}
       <Item
         title="Edit Profile"
-        icon="person-outline"
+        icon="person-circle-outline"
         onPress={() => navigation.navigate("EditProfile")}
       />
 
-      <Item
+      {/* <Item
         title="Change Password"
         icon="lock-closed-outline"
         onPress={() => navigation.navigate("ChangePassword")}
@@ -115,7 +115,7 @@ export default function Account({ navigation }) {
         title="Language"
         icon="language-outline"
         onPress={() => navigation.navigate("Language")}
-      />
+      /> */}
 
       <Item
         title="Delete Account"
