@@ -31,6 +31,8 @@ export default function EditProfile({navigation}) {
         setName(u.user_name);
         setEmail(u.email);
         setPhone(u.phone);
+        console.log(u.user_name);
+        console.log(u.email);
       }
     } catch (error) {
       console.log("Load user error:", error.response?.data || error.message);

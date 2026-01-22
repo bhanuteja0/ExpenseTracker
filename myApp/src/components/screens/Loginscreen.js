@@ -2,87 +2,70 @@ import { useState } from "react";
 import {
   View,
   Text,
-  ImageBackground,
   TextInput,
-  Button,
-  StyleSheet,Pressable
+  Pressable,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-//import Appservice from "../../../sevices/Appservice";
-import Homescreen from "./Homescreen";
-//import Register from "./Register";
 import { loginUser } from "../../../sevices/Appservice";
-import { Alert } from "react-native";
 import tailwind from "twrnc";
 
 export default function Loginscreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [user_pwd, setPassword] = useState("");
   const [errors, setErrors] = useState({});
-const [loading, setLoading] = useState(false);
-
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-
   const validate = () => {
-  let newErrors = {};
+    let newErrors = {};
 
-  if (!email.trim()) {
-    newErrors.email = "Email is required";
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    newErrors.email = "Invalid email format";
-  }
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "Invalid email format";
+    }
 
-  if (!user_pwd.trim()) {
-    newErrors.password = "Password is required";
-  } else if (user_pwd.length < 6) {
-    newErrors.password = "Minimum 6 characters required";
-  }
+    if (!user_pwd.trim()) {
+      newErrors.password = "Password is required";
+    } else if (user_pwd.length < 6) {
+      newErrors.password = "Minimum 6 characters required";
+    }
 
-  setErrors(newErrors);
-  return Object.keys(newErrors).length === 0;
-};
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
+  const handlelogin = async () => {
+    if (!validate()) return;
 
+    try {
+      setLoading(true);
+      setErrors({});
 
+      const res = await loginUser({
+        email,
+        user_pwd,
+      });
 
-const handlelogin = async () => {
-  if (!validate()) return;
-  try {
-   setLoading(true);
+      await AsyncStorage.setItem("token", res.data.token);
+      await AsyncStorage.setItem("user_id", res.data.user_id.toString());
+      await AsyncStorage.setItem("user_name", JSON.stringify(res.data.user_name));
 
-    const res = await loginUser({
-      email,
-      user_pwd,
-    });
-    // console.log(res.data.token);
-    // console.log(res.data.user_id);
-    // console.log(res.data.user_name);
+      navigation.replace("bottomtabs");
+    } catch (error) {
+      console.log("Login error:", error.response?.data || error.message);
+      setErrors({ general: "Invalid email or password" });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-     await AsyncStorage.setItem("token", res.data.token);
-    await AsyncStorage.setItem("user_id", res.data.user_id.toString());
-    await AsyncStorage.setItem("user_name", JSON.stringify(res.data.user_name));
-
-
-    navigation.replace("bottomtabs");
-  }catch (error) {
-    console.log("Login error:", error.response?.data || error.message);
-    setErrors({ general: "Invalid email or password" });
-  } finally {
-    setLoading(false);
-  }
-};
-
-  const handleregister=()=>{
+  const handleregister = () => {
     navigation.navigate("Register");
-  }
+  };
 
-
-
-
- return (
-   <View style={tailwind`flex-1 bg-white px-6 justify-center`}>
-
+  return (
+    <View style={tailwind`flex-1 bg-white px-6 justify-center`}>
       {/* App Title */}
       <View style={tailwind`mb-10`}>
         <Text style={tailwind`text-3xl font-bold text-black text-center`}>
@@ -95,9 +78,7 @@ const handlelogin = async () => {
 
       {/* Email */}
       <View style={tailwind`mb-5`}>
-        <Text style={tailwind`text-sm text-gray-500 mb-2`}>
-          Email
-        </Text>
+        <Text style={tailwind`text-sm text-gray-500 mb-2`}>Email</Text>
         <TextInput
           placeholder="Enter email address"
           placeholderTextColor="#9CA3AF"
@@ -106,13 +87,16 @@ const handlelogin = async () => {
           autoCapitalize="none"
           style={tailwind`border border-gray-300 rounded-xl px-4 py-3 text-black`}
         />
+        {errors.email && (
+          <Text style={tailwind`text-red-500 text-sm mt-1`}>
+            {errors.email}
+          </Text>
+        )}
       </View>
 
       {/* Password */}
       <View style={tailwind`mb-6`}>
-        <Text style={tailwind`text-sm text-gray-500 mb-2`}>
-          Password
-        </Text>
+        <Text style={tailwind`text-sm text-gray-500 mb-2`}>Password</Text>
         <TextInput
           placeholder="Enter password"
           placeholderTextColor="#9CA3AF"
@@ -121,26 +105,29 @@ const handlelogin = async () => {
           secureTextEntry
           style={tailwind`border border-gray-300 rounded-xl px-4 py-3 text-black`}
         />
+        {errors.password && (
+          <Text style={tailwind`text-red-500 text-sm mt-1`}>
+            {errors.password}
+          </Text>
+        )}
       </View>
 
-      {/* Message */}
-      {message !== "" && (
-        <Text
-          style={tailwind`text-sm mb-4 ${
-            message.includes("Successful")
-              ? "text-green-600"
-              : "text-red-600"
-          }`}
-        >
-          {message}
+      {/* General Error */}
+      {errors.general && (
+        <Text style={tailwind`text-red-600 text-center mb-4`}>
+          {errors.general}
         </Text>
       )}
 
       {/* Login Button */}
-      <Pressable onPress={handlelogin}>
-        <View style={tailwind`bg-black rounded-xl py-4 mb-4`}>
+      <Pressable onPress={handlelogin} disabled={loading}>
+        <View
+          style={tailwind`bg-black rounded-xl py-4 mb-4 ${
+            loading ? "opacity-50" : ""
+          }`}
+        >
           <Text style={tailwind`text-white text-center font-semibold`}>
-            Login
+            {loading ? "Logging in..." : "Login"}
           </Text>
         </View>
       </Pressable>
@@ -153,8 +140,6 @@ const handlelogin = async () => {
           </Text>
         </View>
       </Pressable>
-
     </View>
   );
 }
-

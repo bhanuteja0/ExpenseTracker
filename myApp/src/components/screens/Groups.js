@@ -27,7 +27,7 @@ const Groups = ({ navigation }) => {
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [groupMembers, setGroupMembers] = useState([]);
   const [showAddMember, setShowAddMember] = useState(false);
-  const [newMemberUsername, setNewMemberUsername] = useState("");
+  const [newMemberUserId, setNewMemberUserId] = useState("");
   const [editingGroupId, setEditingGroupId] = useState(null);
   const [editGroupName, setEditGroupName] = useState("");
   const [groupSummary, setGroupSummary] = useState(null);
@@ -139,27 +139,32 @@ const Groups = ({ navigation }) => {
   };
 
   const handleAddMember = async () => {
-    if (!newMemberUsername.trim()) {
-      Alert.alert("Error", "Please enter a username");
-      return;
-    }
-    if (!selectedGroup) return;
-    try {
-      setLoading(true);
-      const res = await addGroupMember(selectedGroup.group_id, {
-        username: newMemberUsername.trim()
-      });
-      Alert.alert("Success", res.data?.message || "Member added successfully");
-      setNewMemberUsername("");
-      setShowAddMember(false);
-      handleViewMembers(selectedGroup);
-    } catch (error) {
-      console.error("Error adding member:", error);
-      Alert.alert("Error", error.response?.data?.message || "Failed to add member");
-    } finally {
-      setLoading(false);
-    }
-  };
+  if (!newMemberUserId.trim()) {
+    Alert.alert("Error", "Please enter a user ID");
+    return;
+  }
+
+  if (!selectedGroup) return;
+
+  try {
+    setLoading(true);
+
+    const res = await addGroupMember(selectedGroup.group_id, {
+      user_id: parseInt(newMemberUserId)
+    });
+
+    Alert.alert("Success", res.data?.message || "Member added successfully");
+    setNewMemberUserId("");
+    setShowAddMember(false);
+    handleViewMembers(selectedGroup);
+  } catch (error) {
+    console.error("Error adding member:", error.response?.data || error.message);
+    Alert.alert("Error", error.response?.data?.message || "Failed to add member");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleRemoveMember = async (memberId) => {
     if (!selectedGroup) return;
@@ -672,15 +677,17 @@ const Groups = ({ navigation }) => {
                   {/* Add Member Form */}
                   {showAddMember && (
                     <View style={tailwind`bg-gray-50 rounded-lg p-3 mb-3`}>
-                      <Text style={tailwind`text-xs text-gray-500 mb-2`}>Username</Text>
-                      <TextInput
-                        placeholder="Enter username"
-                        placeholderTextColor="#9CA3AF"
-                        value={newMemberUsername}
-                        onChangeText={setNewMemberUsername}
-                        autoCapitalize="none"
-                        style={tailwind`border border-gray-300 rounded-lg px-3 py-2 text-black mb-2`}
-                      />
+                     <Text style={tailwind`text-xs text-gray-500 mb-2`}>User ID</Text>
+
+<TextInput
+  placeholder="Enter user ID"
+  placeholderTextColor="#9CA3AF"
+  value={newMemberUserId}
+  onChangeText={setNewMemberUserId}
+  keyboardType="numeric"
+  style={tailwind`border border-gray-300 rounded-lg px-3 py-2 text-black mb-2`}
+/>
+
                       <View style={tailwind`flex-row gap-2`}>
                         <Pressable
                           onPress={handleAddMember}

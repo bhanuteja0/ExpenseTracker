@@ -26,7 +26,7 @@ export default function Account({ navigation }) {
   const loadUser = async () => {
     try {
       const res = await getuser(userId);
-      // console.log(res.data);
+      console.log(res.data);
       setUser(res.data[0]); // change if your API returns { data: {...} }
     } catch (error) {
       console.log("Load user error:", error.response?.data || error.message);
@@ -71,7 +71,7 @@ export default function Account({ navigation }) {
         <View style={tailwind`flex-row items-center`}>
           <View style={tailwind`w-14 h-14 rounded-full bg-black items-center justify-center`}>
             <Text style={tailwind`text-white text-xl font-bold`}>
-              {user?.name?.[0] || "U"}
+              {user?.user_name?.[0] || "U"}
             </Text>
           </View>
 

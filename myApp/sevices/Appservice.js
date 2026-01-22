@@ -88,7 +88,10 @@ export const getGroupMembers = (group_id) => {
 };
 
 export const addGroupMember = (group_id, userData) => {
+  console.log(group_id);
+  console.log(userData);
   return api.post(`/expense_track/groups/groups/${group_id}/members`, userData);
+
 };
 
 export const removeGroupMember = (group_id, user_id) => {
